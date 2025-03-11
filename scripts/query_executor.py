@@ -4,7 +4,7 @@ from scripts.connection_elektra import SSHDatabaseConnection
 class QueryExecutor:
     def __init__(self, hidden_folder_path, json_file_name):
         """
-        Clase para ejecutar consultas SQL y devolver resultados en un DataFrame.
+        Clase para ejecutar consultas SQL desde archivos y devolver resultados en un DataFrame.
         
         Parámetros:
             hidden_folder_path (str): Ruta a la carpeta que contiene las credenciales.
@@ -13,12 +13,13 @@ class QueryExecutor:
         self.hidden_folder_path = hidden_folder_path
         self.json_file_name = json_file_name
 
-    def execute_query(self, sql_file_path):
+    def execute_query_from_file(self, sql_file_path, params=None):
         """
         Ejecuta una consulta SQL desde un archivo y devuelve un DataFrame con los resultados.
 
         Parámetros:
             sql_file_path (str): Ruta del archivo SQL que contiene la consulta.
+            params (dict): Diccionario con los parámetros para reemplazar en la consulta.
 
         Retorna:
             pd.DataFrame: DataFrame con los resultados de la consulta.
@@ -33,6 +34,10 @@ class QueryExecutor:
             # Leer la consulta SQL
             with open(sql_file_path, "r", encoding="utf-8") as file:
                 query = file.read()
+
+            # Reemplazar parámetros en la consulta
+            if params:
+                query = query.format(**params)
 
             # Ejecutar consulta y convertir en DataFrame
             df = pd.read_sql(query, conexion.db_connection)
